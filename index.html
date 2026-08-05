@@ -176,7 +176,7 @@
     @media (max-width:850px) { .landing { background:linear-gradient(145deg,#eef7ff 0%,#dbe9fb 34%,#f0e3f1 65%,#cdeaf9 100%); } .landing .hero { grid-template-columns:1fr; min-height:0; } .landing .hub-stack { gap:18px; } .landing .hub-stack .hub-copy { grid-template-columns:1fr; grid-template-rows:auto auto auto; min-height:0; padding:25px; } .landing .hub-stack .focus-tag,.landing .hub-stack h2,.landing .hub-stack .hub-copy button { grid-column:1; } .landing .hub-stack .focus-tag { grid-row:1; } .landing .hub-stack h2 { grid-row:2; } .landing .hub-stack .hub-copy button { grid-row:3; justify-self:start; margin-top:16px; } }
   </style>
   <style>
-    .landing #visitor-bar { position:absolute; z-index:2; top:18px; right:clamp(18px,5vw,76px); }
+    .landing #visitor-bar { position:absolute; z-index:2; top:18px; right:max(18px,calc((100% - 1080px) / 2)); }
     .record-row .record-result { color:#315c61; font-weight:800; line-height:1.55; }
     .record-download { justify-self:start; cursor:pointer; border:1px solid var(--ink); padding:7px 10px; background:var(--yellow); color:var(--ink); font:inherit; font-size:12px; font-weight:900; }
   </style>
