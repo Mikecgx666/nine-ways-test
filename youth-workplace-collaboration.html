@@ -1044,7 +1044,7 @@
       return Object.fromEntries(Object.entries(normalized).map(([id,value]) => [id,Math.round(value/total*1000)/10]));
     }
     // Report length follows the actual distance between normalized shares.
-    // A third profile appears only when all three leading tendencies are genuinely close.
+    // A tied runner-up is shown together so equal second and third places are not split.
     function journeyFeaturedProfile(actionMap) {
       const counts=Object.fromEntries(Object.keys(labels).map((id) => [id,0]));
       answers.forEach((answer, sceneIndex) => {
@@ -1056,22 +1056,25 @@
       const [[topId,topShare],[secondId,secondShare],[thirdId,thirdShare]]=ordered;
       const leadGap=topShare-secondShare;
       const thirdGap=topShare-thirdShare;
+      const runnerUpTie=Math.abs(secondShare-thirdShare)<=0.1;
       const dominant=leadGap>=4;
       const featured=dominant
         ? [topId]
-        : thirdGap<=2
+        : thirdGap<=2 || runnerUpTie
           ? [topId,secondId,thirdId]
           : [topId,secondId];
       return {
         counts, shares, ordered, topId, topCount:counts[topId], topShare,
         secondId, secondCount:counts[secondId], secondShare, thirdId, thirdShare,
-        leadGap, thirdGap, dominant, featured
+        leadGap, thirdGap, runnerUpTie, dominant, featured
       };
     }
     function journeyFeatureRuleCopy(profile) {
       return profile.dominant
         ? `第一项比第二项高 ${profile.leadGap.toFixed(1)} 个百分点，报告聚焦这一项。`
-        : profile.featured.length===3
+        : profile.runnerUpTie
+          ? `第二项与第三项同分（均为 ${profile.secondShare.toFixed(1)}%），因此与第一项一起呈现。`
+          : profile.featured.length===3
           ? `前三项与第一项最多相差 ${profile.thirdGap.toFixed(1)} 个百分点，因此一并呈现。`
           : `前两项相差 ${profile.leadGap.toFixed(1)} 个百分点；第三项已比第一项低 ${profile.thirdGap.toFixed(1)} 个百分点，因此只呈现前两项。`;
     }
