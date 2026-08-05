@@ -1,0 +1,471 @@
+:root {
+  --ink: #1e3f4b;
+  --copy: #5b7579;
+  --paper: #effaf7;
+  --line: #bcded7;
+  --forest: #245e70;
+  --forest-deep: #9cddd2;
+  --brass: #d7aa42;
+  --coral: #d7aa42;
+  --mist: #dff3ee;
+  --display: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+  --latin: "Bebas Neue", "Arial Narrow", sans-serif;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.landing {
+  padding: 26px clamp(20px, 5vw, 72px) 64px;
+  background: var(--paper);
+}
+
+.landing::before {
+  display: none;
+}
+
+.hero {
+  max-width: 1320px;
+  min-height: 630px;
+  padding: clamp(26px, 4vw, 62px);
+  align-items: stretch;
+  gap: clamp(26px, 4vw, 70px);
+  position: relative;
+  overflow: hidden;
+  background: #c9eee7;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: 46%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(30, 63, 75, .18);
+}
+
+.hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero > div:first-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.hero-title-wrap {
+  align-self: flex-start;
+}
+
+.hero-photo {
+  order: 4;
+  width: min(100%, 510px);
+  height: 168px;
+  margin: 30px 0 0;
+  border: 1px solid rgba(30, 63, 75, .24);
+  box-shadow: none;
+  transform: none;
+}
+
+.hero-photo img {
+  filter: saturate(.72) contrast(1.05);
+}
+
+h1 {
+  color: #1e3f4b;
+  font-size: clamp(50px, 6.8vw, 108px);
+  line-height: 1.02;
+  letter-spacing: 0;
+  white-space: normal;
+}
+
+.title-nine,
+.title-map {
+  display: block;
+  background: none;
+  color: inherit;
+}
+
+.title-map {
+  margin-left: 0;
+  color: #d7aa42;
+  text-align: center;
+}
+
+.hero-english {
+  margin-top: 18px;
+  color: #2f7a82;
+  font-size: clamp(17px, 2vw, 25px);
+  letter-spacing: 0;
+  text-align: left;
+}
+
+.hero-copy {
+  max-width: 470px;
+  margin-top: 24px;
+  color: #426d72;
+  font-size: clamp(16px, 1.8vw, 21px);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.poster {
+  min-height: 100%;
+  border: 1px solid rgba(30, 63, 75, .2);
+  background: #fbfffd;
+  box-shadow: none;
+}
+
+.poster-label {
+  top: 22px;
+  left: 22px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--forest);
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+.poster-number {
+  right: 24px;
+  top: 112px;
+  color: var(--forest);
+  font-size: clamp(132px, 15vw, 210px);
+}
+
+.poster-word {
+  left: 26px;
+  bottom: 34px;
+  width: 270px;
+  color: var(--forest);
+  font-size: clamp(29px, 3vw, 42px);
+  letter-spacing: 0;
+}
+
+.orbit {
+  border: 1px solid #499399;
+  background: transparent !important;
+}
+
+.orbit.one { width: 310px; height: 310px; right: -82px; top: 66px; }
+.orbit.two { width: 246px; height: 246px; left: 28px; bottom: -92px; }
+.orbit.three { width: 94px; height: 94px; right: 74px; bottom: 40px; background: #d7aa42 !important; }
+
+.album-launch,
+.stage,
+.method {
+  max-width: 1320px;
+}
+
+.album-launch {
+  margin-top: 28px;
+  padding: clamp(28px, 4vw, 50px);
+  border: 0;
+  border-top: 1px solid var(--brass);
+  background: #dff3ee;
+  box-shadow: none;
+}
+
+.album-launch .focus-tag,
+.focus-tag {
+  color: var(--brass);
+  font-size: 15px;
+  letter-spacing: 0;
+}
+
+.album-launch h2 {
+  color: #1e3f4b;
+  letter-spacing: 0;
+}
+
+.album-launch p {
+  color: #4e767a;
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+.album-launch button,
+.start,
+.album-card button,
+.album-back,
+.back {
+  min-height: 46px;
+  border: 1px solid currentColor;
+  padding: 0 17px;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font-weight: 800;
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+
+.album-launch button {
+  color: #245e70;
+}
+
+.album-launch button:hover,
+.start:hover,
+.album-card button:hover,
+.album-back:hover,
+.back:hover {
+  transform: translateY(-2px);
+  background: var(--forest);
+  color: #fff;
+  box-shadow: none;
+}
+
+.stage {
+  margin-top: 64px;
+}
+
+.stage-title {
+  margin-bottom: 22px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--line);
+}
+
+h2 {
+  color: var(--forest);
+  letter-spacing: 0;
+}
+
+.stage-title p {
+  color: var(--copy);
+}
+
+.age-grid,
+.album-grid {
+  gap: 12px;
+  border: 0;
+}
+
+.age-grid {
+  display: grid;
+}
+
+.age-card,
+.album-card {
+  min-height: 255px;
+  padding: 22px;
+  border: 1px solid var(--line) !important;
+  background: rgba(255, 255, 255, .54) !important;
+  color: var(--ink);
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.age-card:hover,
+.album-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--forest) !important;
+  background: #fafbff !important;
+}
+
+.age-card:nth-child(1), .album-card:nth-child(1) { border-top: 4px solid #d7aa42 !important; }
+.age-card:nth-child(2), .album-card:nth-child(2) { border-top: 4px solid #e9b66b !important; }
+.age-card:nth-child(3), .album-card:nth-child(3) { border-top: 4px solid #62b5bb !important; }
+.age-card:nth-child(4), .album-card:nth-child(4) { border-top: 4px solid #e4c67d !important; }
+.age-card:nth-child(5), .album-card:nth-child(5) { border-top: 4px solid #9a8dcc !important; }
+
+.age-range {
+  color: var(--forest);
+}
+
+.age-number {
+  font-size: clamp(33px, 3vw, 47px);
+  letter-spacing: 0;
+}
+
+.age-name,
+.album-card h3 {
+  color: var(--forest);
+  letter-spacing: 0;
+}
+
+.age-card p,
+.album-card p {
+  color: var(--copy);
+  min-height: 0;
+  font-weight: 600;
+}
+
+.start,
+.album-card button,
+.album-back {
+  color: var(--forest);
+}
+
+.method {
+  margin-top: 52px;
+  border-top: 1px solid var(--line);
+}
+
+.method div {
+  color: var(--copy);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.album-view {
+  padding: clamp(28px, 5vw, 72px);
+  background: var(--paper);
+}
+
+.album-header {
+  align-items: flex-end;
+  margin-bottom: 32px;
+  padding: clamp(26px, 4vw, 48px);
+  background: #dff3ee;
+}
+
+.album-header h2 {
+  color: #1e3f4b;
+}
+
+.album-header p {
+  color: #4e767a;
+}
+
+.album-header .focus-tag {
+  color: #245e70;
+}
+
+.album-header .album-back {
+  margin: 0 22px 22px 0;
+  color: #245e70;
+}
+
+.test-view {
+  background: var(--paper);
+}
+
+.test-top {
+  position: relative;
+  min-height: 68px;
+  border-bottom: 1px solid var(--line);
+  background: #f7fcfa;
+  color: #1e3f4b;
+}
+
+.test-top span {
+  color: #5b7579;
+}
+
+.test-top .back {
+  min-height: 34px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #1e3f4b;
+}
+
+.test-top .back::before {
+  content: "←";
+  margin-right: 8px;
+}
+
+.test-top strong {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Shared test-page refinements */
+body:has(#preschool-observation-pilot),
+body:has(#child-7-12-exploration),
+body:has(#teen-reflection),
+body:has(#adult-decision),
+body:has(#adult-integration) {
+  background: #effaf7;
+  color: var(--forest);
+}
+
+.viz-badge,
+.badge {
+  border: 1px solid var(--forest) !important;
+  background: #e3d1af !important;
+  color: var(--forest) !important;
+}
+
+.btn,
+.choice,
+.action {
+  border: 1px solid var(--line) !important;
+  background: rgba(255, 255, 255, .78) !important;
+  box-shadow: none !important;
+}
+
+.btn[aria-pressed="true"],
+.choice[aria-pressed="true"] {
+  border-color: var(--forest) !important;
+  background: var(--mist) !important;
+}
+
+.btn-primary,
+.primary {
+  border-color: var(--forest) !important;
+  background: var(--forest) !important;
+  color: #fff !important;
+}
+
+.personality-report {
+  border: 1px solid var(--line) !important;
+  background: #fdfdff !important;
+  box-shadow: none !important;
+}
+
+.personality-report__score,
+.personality-report__tag {
+  border-color: var(--line) !important;
+  background: #e3d1af !important;
+}
+
+.personality-report__topic {
+  border-color: var(--line) !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 850px) {
+  .hero {
+    min-height: 0;
+    padding: 34px 26px;
+  }
+
+  .poster {
+    min-height: 330px;
+  }
+
+  .album-header {
+    align-items: flex-start;
+  }
+
+  .album-header .album-back {
+    margin: 0 26px 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero,
+  .album-header {
+    padding: 28px 20px;
+  }
+
+  .hero-photo {
+    height: 136px;
+  }
+
+  .title-map {
+    margin-left: .08em;
+  }
+
+  .age-card,
+  .album-card {
+    min-height: 190px;
+  }
+}
