@@ -1666,6 +1666,7 @@
       root.querySelectorAll('[data-framework]').forEach(button=>button.setAttribute('aria-pressed','false'));
     }
     function prepareResults() {
+      saveCompletedResult();
       if (activeModule.loopState) {
         get('result-preview-title').textContent = '三次回环，你留下了一条应对路线';
         get('result-preview-copy').textContent = loopCompletionCopy();
@@ -1786,12 +1787,7 @@
       const values=isJourney?journeyRelativeValues(journeyShares):score(scenes,answers,actionMap);
       const reportShares=isJourney?journeyShares:journeyReportShares(values);
       clearSavedProgress();
-      window.enneagramRecordResult?.({
-        stageId: requestedModule,
-        stageName: activeModule.title,
-        answers: answers.slice(),
-        scores: detailedReport ? reportShares : values,
-      });
+      saveCompletedResult(actionMap);
       const ordered=Object.entries(detailedReport?reportShares:values).sort((a,b)=>b[1]-a[1] || Number(a[0])-Number(b[0]));
       const [topId,topValue]=ordered[0]; const [secondId,secondValue]=ordered[1];
       const report=reports[topId]; const secondReport=reports[secondId];
@@ -1857,6 +1853,18 @@
       drawRadar(values);
       if (usesJourneyScoreSurface) renderJourneyFigureReferences(reportShares); else get('journey-figure-reference').hidden=true;
       renderRankings(detailedReport?reportShares:values,close,reportShares); if (detailedReport) renderJourneyCenters(reportShares); renderJohari(values); renderClosingAction(topId,Boolean(actionMap),actionMap); if (isJourney) formalizeJourneyResultLanguage(); revealReportSections(); window.scrollTo(0,0);
+    }
+    function saveCompletedResult(actionMap = activeModule.actionMap || transitionActionMaps[requestedModule] || null) {
+      if (!actionMap || answers.some((answer) => answer === null)) return;
+      const values=isJourneyStyle
+        ? journeyRelativeValues(journeyPersonalityShares(actionMap))
+        : score(scenes,answers,actionMap);
+      window.enneagramRecordResult?.({
+        stageId: requestedModule,
+        stageName: activeModule.title,
+        answers: answers.slice(),
+        scores: isJourneyStyle ? journeyPersonalityShares(actionMap) : values,
+      });
     }
     function showChapterInterlude(nextIndex, continueStory) {
       const interludes={

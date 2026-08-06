@@ -84,7 +84,7 @@
     frame.src = stage.src;
     frame.title = stage.title;
     testName.textContent = stage.name;
-    saveStatus.textContent = '本次结果仅在当前页面查看';
+    saveStatus.textContent = '答完后将自动保存记录';
     landing.style.display = 'none';
     closeCollections();
     testView.style.display = 'block';
@@ -158,6 +158,16 @@
   });
 
   frame.addEventListener('load', connectTestHeader);
+  window.addEventListener('message', (event) => {
+    if (event.origin !== window.location.origin || event.data?.type !== 'enneagram-record-saved') return;
+    if (event.data.error) {
+      saveStatus.textContent = `记录未保存：${event.data.error}`;
+      saveStatus.dataset.kind = 'error';
+      return;
+    }
+    saveStatus.textContent = '答题记录已保存';
+    saveStatus.dataset.kind = 'success';
+  });
 
   setUpScrollReveal();
 })();
