@@ -332,7 +332,7 @@
     #workplace-collaboration.has-result-surface .journey-audit-table { width:100%; min-width:760px; border-collapse:collapse; background:#fff; }
     #workplace-collaboration.has-result-surface .journey-audit-table th { padding:9px 10px; color:#24494c; font-size:11px; font-weight:900; text-align:left; background:#dceef4; }
     #workplace-collaboration.has-result-surface .journey-audit-table td { padding:12px 14px; color:#496b70; font-size:12px; font-weight:700; line-height:1.5; vertical-align:top; border-top:1px solid #d8e3e3; }
-    #workplace-collaboration.has-result-surface .journey-audit-table .audit-structure { display:inline-block; margin:4px 0; color:#647c7f; font-size:11px; font-weight:800; line-height:1.45; }
+    #workplace-collaboration.has-result-surface .journey-audit-table .audit-question { display:block; margin-top:5px; color:#496b70; font-size:12px; font-weight:700; line-height:1.5; }
     #workplace-collaboration.has-result-surface .journey-audit-table td strong,
     #workplace-collaboration.has-result-surface .journey-audit-table .audit-score { color:#24494c; font-weight:900; }
     #workplace-collaboration.has-result-surface .journey-audit-grid > section:first-child .journey-audit-table-wrap { overflow:visible; border:0; }
@@ -459,7 +459,7 @@
       <section id="action-lab" class="action-builder closing-action action-lab" aria-label="从本次选择到下一次行动"><section class="action-lab-map" aria-label="本次回顾、下次尝试与效果标准"><article class="action-pole action-prior"><span>本次回顾</span><strong>你刚才的选择</strong><p id="prior-copy"></p></article><article class="action-pole action-posterior"><span>下次尝试</span><strong>下次可以试试</strong><p id="posterior-copy"></p></article><article class="action-fusion"><span>效果标准</span><h4>做到什么算有效</h4><p id="breakthrough-copy"></p></article></section><section id="action-card-output" class="action-card-output action-framework"><header><span class="card-label">选一张行动卡</span></header><div class="framework-tabs" role="group" aria-label="行动分析方法"><button class="action" type="button" data-framework="kiss" aria-pressed="false">KISS · 留改停试</button><button class="action" type="button" data-framework="toc" aria-pressed="false">TOC · 先解卡点</button><button class="action" type="button" data-framework="nlp" aria-pressed="false">NLP · 六步行动</button></div><div id="framework-output" class="framework-output" aria-live="polite"><p>选一张行动卡，带走下次可以直接做的一步。</p></div><div class="action-card-buttons"><button id="practice-action" class="action" type="button">设为 3 天练习</button></div><p id="card-status" class="card-status" aria-live="polite"></p></section></section>
       <section id="journey-audit-section" class="journey-audit-section" aria-labelledby="journey-audit-title" hidden>
         <header><div><h3 id="journey-audit-title">这次分数，怎么来的</h3></div><button id="toggle-journey-audit" class="action" type="button" aria-expanded="false" aria-controls="journey-audit-content">查看评分依据</button></header>
-          <div id="journey-audit-content" class="journey-audit-content" hidden><div class="journey-audit-grid"><section aria-labelledby="journey-audit-source-title"><h5 id="journey-audit-source-title">九项命名依据</h5><div class="journey-audit-table-wrap"><table class="journey-audit-table"><thead><tr><th>型号</th><th>原文关键词</th><th>页面命名</th></tr></thead><tbody id="journey-audit-source"></tbody></table></div></section><section aria-labelledby="journey-audit-score-title"><h5 id="journey-audit-score-title">27 题计分记录</h5><div class="journey-audit-table-wrap"><table class="journey-audit-table"><thead><tr><th>结构与题目</th><th>你的选择</th><th>主方向</th><th>计分理由</th></tr></thead><tbody id="journey-audit-score"></tbody></table></div></section></div></div>
+          <div id="journey-audit-content" class="journey-audit-content" hidden><div class="journey-audit-grid"><section aria-labelledby="journey-audit-source-title"><h5 id="journey-audit-source-title">九项命名依据</h5><div class="journey-audit-table-wrap"><table class="journey-audit-table"><thead><tr><th>型号</th><th>原文关键词</th><th>页面命名</th></tr></thead><tbody id="journey-audit-source"></tbody></table></div></section><section aria-labelledby="journey-audit-score-title"><h5 id="journey-audit-score-title">27 题计分记录</h5><div class="journey-audit-table-wrap"><table class="journey-audit-table"><thead><tr><th>题目</th><th>你的选择</th><th>计入类型</th><th>计分理由</th></tr></thead><tbody id="journey-audit-score"></tbody></table></div></section></div></div>
       </section>
       <div class="restart-row"><button id="restart" class="action primary" type="button">重新开始这次测评</button></div>
     </section>
@@ -1166,14 +1166,13 @@
         sourceBody.append(row);
       });
       scenes.forEach((scene,sceneIndex) => {
-        scene.choices.forEach((entry,choiceIndex) => {
+        const choiceIndex=answers[sceneIndex];
         const pair=actionMap[sceneIndex]?.[choiceIndex]; if (!pair) return;
-        const row=document.createElement('tr'); const scene=scenes[sceneIndex]; const choiceData=scene.choices[choiceIndex]?.[0]; const choice=typeof choiceData==='object'?choiceData.copy:choiceData||''; const action=typeof choiceData==='object'?choiceData.title:choice; const primary=journeyAuditKeywords[pair[0]]; const structure=structureAt(sceneIndex);
+        const row=document.createElement('tr'); const choiceData=scene.choices[choiceIndex]?.[0]; const choice=typeof choiceData==='object'?choiceData.copy:choiceData||''; const action=typeof choiceData==='object'?choiceData.title:choice;
         const auditKey=`${sceneIndex}:${choiceIndex}`;
         const note=activeModule.auditNotes?.[sceneIndex]?.[choiceIndex] || journeyAuditNotes[auditKey] || `先“${action}”。`;
-        row.innerHTML=`<td><strong>第 ${String(sceneIndex+1).padStart(2,'0')} 题</strong><br><span class="audit-structure">${[structure.phase,structure.module].filter(Boolean).join(' · ')}</span><br>${scene.title}</td><td class="audit-choice">${choice}</td><td><strong>${enneagramTypeNames[pair[0]]}</strong><br><span class="audit-score">+2 分</span></td><td>${note}，因此计入这一类型。</td>`;
+        row.innerHTML=`<td><strong>第 ${String(sceneIndex+1).padStart(2,'0')} 题 · ${scene.title}</strong><span class="audit-question">${scene.text}</span></td><td class="audit-choice">${choice}</td><td><strong>${enneagramTypeNames[pair[0]]}</strong><br><span class="audit-score">+2 分</span></td><td>${note}，因此计入这一类型。</td>`;
         scoreBody.append(row);
-        });
       });
     }
     const journeyGapScenes = [
