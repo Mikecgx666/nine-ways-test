@@ -179,10 +179,22 @@
     .landing #visitor-bar { position:absolute; z-index:2; top:18px; right:max(18px,calc((100% - 1080px) / 2)); }
     .record-row .record-result { color:#315c61; font-weight:800; line-height:1.55; }
     .record-download { justify-self:start; cursor:pointer; border:1px solid var(--ink); padding:7px 10px; background:var(--yellow); color:var(--ink); font:inherit; font-size:12px; font-weight:900; }
+    .auth-gate { background:linear-gradient(145deg,#eef7ff 0%,#dbe9fb 32%,#f0e3f1 68%,#cdeaf9 100%); }
+    .auth-gate::before { right:-13vw; top:-18vw; border-color:rgba(45,86,104,.28); background:rgba(185,217,236,.55); }
+    .auth-gate::after { left:-15vw; bottom:-20vw; border-color:rgba(45,86,104,.24); background:rgba(240,227,241,.8); }
+    .auth-card { width:min(100%,560px); border-color:#315667; background:rgba(248,252,255,.9); box-shadow:10px 11px 0 #315667; }
+    .auth-card h2 { color:#24494c; }
+    .auth-card .eyebrow { color:#3c7186; }
+    .stack-form { gap:19px; }
+    .stack-form label:not(.check-row) { gap:9px; color:#24494c; font-size:17px; }
+    .stack-form input:not([type="checkbox"]),.stack-form select { width:100%; min-height:60px; border:2px solid #315667; border-radius:0; padding:10px 13px; background:rgba(255,255,255,.94); color:#183c43; font:700 18px "Microsoft YaHei","PingFang SC",sans-serif; }
+    .stack-form select { cursor:pointer; }
+    .primary-action { min-height:54px; border-color:#315667; background:#3c7186; color:#fff; box-shadow:5px 5px 0 #294e60; font-size:18px; }
+    .primary-action:hover { background:#285a70; box-shadow:3px 3px 0 #294e60; }
   </style>
 </head>
 <body>
-  <section id="auth-gate" class="auth-gate" aria-labelledby="profile-title"><div class="auth-card"><p class="eyebrow">NINE WAYS</p><h2 id="profile-title">先建立你的答题档案</h2><p>填写后即可进入测试。记录会保存在当前浏览器的匿名档案中，可随时回看。</p><form id="profile-form" class="stack-form"><label>姓名<input name="display_name" maxlength="40" autocomplete="name" required placeholder="例如：林然"></label><label>年龄<input name="age" type="number" min="7" max="120" inputmode="numeric" required placeholder="7 - 120"></label><label>性别<select name="gender" required><option value="female">女</option><option value="male">男</option><option value="nonbinary">非二元</option><option value="prefer_not_to_say">不愿透露</option></select></label><p class="form-note">不使用验证码或密码。请勿在公用设备填写真实姓名；清除浏览器数据后，记录无法恢复。</p><p id="profile-notice" class="notice" aria-live="polite"></p><button class="primary-action" type="submit">进入首页</button></form></div></section>
+  <section id="auth-gate" class="auth-gate" aria-labelledby="profile-title"><div class="auth-card"><p class="eyebrow">NINE WAYS</p><h2 id="profile-title">先建立你的答题档案</h2><p>填写后即可进入测试。记录会保存在当前浏览器的匿名档案中，可随时回看。</p><form id="profile-form" class="stack-form"><label>姓名<input name="display_name" maxlength="40" autocomplete="name" required placeholder="例如：林然"></label><label>年龄<input name="age" type="number" min="7" max="120" inputmode="numeric" required placeholder="7 - 120"></label><label>性别<select name="gender" required><option value="male">男</option><option value="female">女</option><option value="nonbinary">非二元</option><option value="prefer_not_to_say">不愿透露</option></select></label><p class="form-note">不使用验证码或密码。请勿在公用设备填写真实姓名；清除浏览器数据后，记录无法恢复。</p><p id="profile-notice" class="notice" aria-live="polite"></p><button class="primary-action" type="submit">进入首页</button></form></div></section>
   <section id="legacy-auth-gate" class="auth-gate" aria-hidden="true"></section>
   <main class="shell">
     <section id="landing" class="landing">
