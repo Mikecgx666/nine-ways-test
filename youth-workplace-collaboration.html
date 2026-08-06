@@ -903,6 +903,36 @@
     let lastScores = null;
     let currentClosingCard = null;
     const get = (id) => root.querySelector(`#${id}`);
+    const progressStorageKey = `enneagram-${requestedModule}-progress-v1`;
+    function saveProgress() {
+      if (!answers.some((answer) => answer !== null)) return;
+      try {
+        localStorage.setItem(progressStorageKey, JSON.stringify({
+          answers: answers.slice(),
+          index,
+          savedAt: new Date().toISOString()
+        }));
+      } catch {}
+    }
+    function clearSavedProgress() {
+      try { localStorage.removeItem(progressStorageKey); } catch {}
+    }
+    function restoreSavedProgress() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(progressStorageKey) || 'null');
+        if (!saved || !Array.isArray(saved.answers) || saved.answers.length !== scenes.length) return false;
+        const validAnswers = saved.answers.every((answer) => answer === null || Number.isInteger(answer) && answer >= 0 && answer < 3);
+        if (!validAnswers || !saved.answers.some((answer) => answer !== null)) return false;
+        saved.answers.forEach((answer, sceneIndex) => { answers[sceneIndex] = answer; });
+        index = Number.isInteger(saved.index) && saved.index >= 0 && saved.index < scenes.length
+          ? saved.index
+          : saved.answers.findIndex((answer) => answer === null);
+        if (index < 0) index = scenes.length - 1;
+        return true;
+      } catch {
+        return false;
+      }
+    }
     function getLoopState() {
       const config = activeModule.loopState;
       if (!config) return null;
@@ -1484,7 +1514,7 @@
       const scene = scenes[index]; const progress = (index + 1) / scenes.length * 100; const structure=structureAt(index); renderJourney(index); renderLoopState(); get('progress').textContent = `${[structure.phase,structure.module,chapters[index]].filter(Boolean).join(' · ')}  ${index + 1} / ${scenes.length}`; get('meter-fill').style.width = `${progress}%`; moveMeterCat(progress); get('scene-title').textContent = scene.title; get('scene-text').textContent = scene.text;
       const choices = get('choices'); choices.replaceChildren(); orderedChoices(scene,index).forEach(({choice,choiceIndex},displayIndex) => { const button = document.createElement('button'); button.type = 'button'; button.className = 'choice'; button.dataset.letter = String.fromCharCode(65 + displayIndex); const choiceData=choice[0]; const title=document.createElement('strong'); title.textContent=typeof choiceData==='object'&&choiceData!==null?choiceData.title:choiceData; button.append(title); if(typeof choiceData==='object'&&choiceData?.copy){const copy=document.createElement('small');copy.textContent=choiceData.copy;button.append(copy);} button.setAttribute('aria-pressed', String(answers[index] === choiceIndex)); button.addEventListener('click', (event) => { if (answers[index] === choiceIndex) return; answers[index] = choiceIndex; button.classList.add('is-chosen'); burstFromChoice(button,event); window.setTimeout(render, 180); }); choices.append(button); });
       const selected=answers[index];
-      get('back').disabled = index === 0; get('next').disabled = selected === null; get('next').textContent = index === scenes.length - 1 ? '生成我的结果' : '继续下一天';
+      get('back').disabled = index === 0; get('next').disabled = selected === null; get('next').textContent = index === scenes.length - 1 ? '生成我的结果' : '继续下一天'; saveProgress();
     }
     function drawRadar(values) {
       const target=get('radar'); target.replaceChildren();
@@ -1779,6 +1809,7 @@
       const journeyProfile=isJourney?journeyFeaturedProfile(actionMap):null;
       const values=isJourney?journeyRelativeValues(journeyShares):score(scenes,answers,actionMap);
       const reportShares=isJourney?journeyShares:journeyReportShares(values);
+      clearSavedProgress();
       window.enneagramRecordResult?.({
         stageId: requestedModule,
         stageName: activeModule.title,
@@ -1873,9 +1904,11 @@
     get('toggle-journey-audit').addEventListener('click',()=>{const content=get('journey-audit-content');const expanded=content.hidden;content.hidden=!expanded;get('toggle-journey-audit').setAttribute('aria-expanded',String(expanded));get('toggle-journey-audit').textContent=expanded?'收起评分依据':'查看评分依据';});
     root.querySelectorAll('[data-framework]').forEach(button=>button.addEventListener('click',()=>renderActionFramework(button.dataset.framework)));
     get('practice-action').addEventListener('click',()=>{try{localStorage.setItem(`enneagram-${requestedModule}-practice`,JSON.stringify({savedAt:new Date().toISOString(),card:currentClosingCard}));get('card-status').textContent='已设为 3 天练习，回来看一看这一步是否真的发生。';get('practice-action').textContent='已设为 3 天练习';}catch{get('card-status').textContent='当前浏览器未允许保存，请复制这句提醒后自行设一个 3 天后的回看。';}});
-    get('restart').addEventListener('click',()=>{root.classList.remove('has-result-surface');document.body.classList.remove('is-journey-result');answers.fill(null);index=0;currentTopId=null;currentSecondId=null;lastScores=null;currentClosingCard=null;get('assessment').hidden=false;get('story-intro').hidden=true;get('result-preview').hidden=true;get('result').hidden=true;render();window.scrollTo(0,0);});
+    get('restart').addEventListener('click',()=>{root.classList.remove('has-result-surface');document.body.classList.remove('is-journey-result');answers.fill(null);index=0;currentTopId=null;currentSecondId=null;lastScores=null;currentClosingCard=null;clearSavedProgress();get('assessment').hidden=false;get('story-intro').hidden=true;get('result-preview').hidden=true;get('result').hidden=true;render();window.scrollTo(0,0);});
     applyModuleCopy();
-    renderJourney(0);
+    const restoredProgress=restoreSavedProgress();
+    if (restoredProgress) get('begin-story').textContent=`继续第 ${index + 1} 题`;
+    renderJourney(index);
   })();
   </script>
   <script src="assets/number-warmup.js?v=20260805-mandatory-321"></script>
