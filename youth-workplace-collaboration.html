@@ -43,6 +43,34 @@
     .choice:hover { transform:translate(2px,2px); box-shadow:3px 3px 0 var(--ink); }
     .choice[aria-pressed="true"] { background:var(--green); box-shadow:5px 5px 0 var(--ink); }
     .choice[aria-pressed="true"]::before { background:var(--yellow); }
+    .choice.unmatched-choice { border-style:dashed; color:var(--muted); background:#fffdf6; }
+    .choice.unmatched-choice::before { color:var(--muted); border-color:var(--muted); }
+    .scale-stage { margin-top:34px; padding:clamp(22px,4vw,44px); border:2px solid var(--ink); background:#fff; box-shadow:8px 8px 0 var(--ink); }
+    .scale-stage > header { padding-bottom:18px; border-bottom:2px solid var(--ink); }
+    .scale-stage > header p { margin:0 0 8px; color:var(--purple); font-size:12px; font-weight:900; letter-spacing:.08em; }
+    .scale-stage > header h2 { margin:0; font-size:clamp(28px,4vw,42px); line-height:1.15; letter-spacing:0; }
+    .scale-stage > header div { max-width:720px; margin-top:12px; color:var(--muted); font-size:15px; font-weight:700; line-height:1.65; }
+    .scale-rows { display:grid; gap:0; margin-top:8px; }
+    .scale-row { padding:22px 0; border-bottom:1px solid #c7c0cc; }
+    .scale-row:last-child { border-bottom:0; }
+    .scale-row h3 { margin:0; font-size:18px; line-height:1.55; }
+    .scale-row h3 small { display:inline-block; margin-right:8px; color:var(--purple); font-size:12px; font-weight:900; vertical-align:2px; }
+    .scale-control { display:grid; grid-template-columns:minmax(84px,.7fr) minmax(180px,2.8fr) minmax(84px,.7fr); gap:12px; align-items:center; margin-top:16px; }
+    .scale-end { color:var(--muted); font-size:12px; font-weight:900; line-height:1.3; }
+    .scale-end:last-child { text-align:right; }
+    .scale-points { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .scale-point { display:grid; place-items:center; width:32px; height:32px; cursor:pointer; border:2px solid var(--ink); border-radius:50%; background:#fff; color:var(--ink); font-size:0; transition:transform .12s ease,background .12s ease,box-shadow .12s ease; }
+    .scale-point:nth-child(1),.scale-point:nth-child(5) { width:38px; height:38px; }
+    .scale-point:nth-child(2),.scale-point:nth-child(4) { width:34px; height:34px; }
+    .scale-point:hover,.scale-point:focus-visible { outline:0; transform:translateY(-2px); box-shadow:2px 2px 0 var(--ink); }
+    .scale-point[aria-pressed="true"] { background:var(--purple); box-shadow:3px 3px 0 var(--ink); transform:translateY(-2px); }
+    .scale-point[aria-pressed="true"]::after { content:""; width:10px; height:10px; border-radius:50%; background:#fff; }
+    .scale-stage .actions { margin-top:26px; }
+    .scale-group { padding:22px 0; border-bottom:2px solid var(--ink); }
+    .scale-group:last-child { border-bottom:0; }
+    .scale-group > header { padding:0 0 8px; border:0; }
+    .scale-group > header p { margin:0 0 6px; color:var(--purple); font-size:13px; font-weight:900; }
+    .scale-group > header div { color:var(--muted); font-size:14px; font-weight:700; line-height:1.6; }
     .actions { display:flex; flex-wrap:wrap; justify-content:space-between; gap:12px; margin-top:22px; }
     .action { min-height:46px; cursor:pointer; border:2px solid var(--ink); border-radius:0; padding:0 15px; background:#fff; color:var(--ink); font-weight:900; }
     .action.primary { min-width:min(100%,280px); background:var(--red); box-shadow:4px 4px 0 var(--ink); }
@@ -435,7 +463,8 @@
     #workplace-collaboration.has-result-surface .rank-band { position:relative; display:block; height:9px; overflow:visible; background:linear-gradient(90deg,#b9dbea 0 20%,#acdcca 20% 40%,#eee3aa 40% 60%,#e7c66b 60% 80%,#d9aa42 80%); }
     #workplace-collaboration.has-result-surface .rank-band i { position:absolute; top:-5px; left:var(--position); width:4px; height:19px; background:#173940; transform:translateX(-50%); }
     #workplace-collaboration.has-result-surface .rank.top-one { border-left-color:#d7aa42; background:#fff9e8; } #workplace-collaboration.has-result-surface .rank.top-two { border-left-color:#9d8bd1; background:#f8f6ff; } #workplace-collaboration.has-result-surface .rank.top-three { border-left-color:#83ad88; background:#f2f9f0; }
-    @media (prefers-reduced-motion:no-preference) { .meter span { transition:width .32s ease-out; } .journey-node.is-active circle { transform-box:fill-box; transform-origin:center; animation:active-node-pulse .45s ease-out both; } .choice:active,.action:not(:disabled):active,.journey-center-card:active,.journey-report-download:active { scale:.98; filter:brightness(.97); } #result:not([hidden]) { animation:result-enter .36s ease-out both; } .scroll-reveal { opacity:0; transform:translateY(16px); transition:opacity .36s ease-out,transform .36s ease-out; transition-delay:var(--reveal-delay,0ms); } .scroll-reveal.is-visible { opacity:1; transform:translateY(0); } .chapter-interlude { animation:interlude-backdrop .2s ease-out both; } .chapter-interlude__panel { animation:interlude-panel .32s ease-out both; } }
+    @media (max-width:640px) { .scale-control { grid-template-columns:1fr; gap:10px; } .scale-end:last-child { text-align:left; } .scale-points { max-width:310px; } }
+    @media (prefers-reduced-motion:no-preference) { .meter span { transition:width .32s ease-out; } .journey-node.is-active circle { transform-box:fill-box; transform-origin:center; animation:active-node-pulse .45s ease-out both; } .choice:active,.action:not(:disabled):active,.journey-center-card:active,.journey-report-download:active { scale:.98; filter:brightness(.97); } #result:not([hidden]) { animation:result-enter .36s ease-out both; } .scroll-reveal { opacity:0; transform:translateY(16px); transition:opacity .36s ease-out,transform .36s ease-out; transition-delay:var(--reveal-delay,0ms); } .scroll-reveal.is-visible { opacity:0; transform:translateY(16px); transition:opacity .36s ease-out,transform .36s ease-out; transition-delay:var(--reveal-delay,0ms); } .scroll-reveal.is-visible { opacity:1; transform:translateY(0); } .chapter-interlude { animation:interlude-backdrop .2s ease-out both; } .chapter-interlude__panel { animation:interlude-panel .32s ease-out both; } }
     @keyframes active-node-pulse { 0% { transform:scale(.82); } 65% { transform:scale(1.1); } 100% { transform:scale(1); } }
     @keyframes result-enter { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
     @keyframes interlude-backdrop { from { opacity:0; } to { opacity:1; } }
@@ -462,6 +491,11 @@
       <article class="scene-main"><h2 id="scene-title"></h2><p id="scene-text"></p></article>
       <div id="choices" class="choices" aria-label="情境选项"></div>
       <div class="actions"><button id="back" class="action" type="button">上一题</button><button id="next" class="action primary" type="button" disabled>下一题</button></div>
+    </section>
+    <section id="scale-assessment" class="scale-stage" hidden aria-labelledby="scale-title">
+      <header><p>SELF CHECK / 9 ITEMS</p><h2 id="scale-title">用九句话，校准这次选择</h2><div id="scale-intro">前面的情境题看你在不同场景里的第一反应。下面按刚才的三阶段，各用三句话回看更稳定的做法。</div></header>
+      <div id="scale-rows" class="scale-rows"></div>
+      <div class="actions"><button id="back-from-scale" class="action" type="button">返回情境题</button><button id="finish-scale" class="action primary" type="button" disabled>查看我的结果</button></div>
     </section>
     <section id="result-preview" class="result-preview" hidden>
       <p id="result-preview-kicker" class="eyebrow">90 DAYS COMPLETE</p>
@@ -497,6 +531,7 @@
   <script src="journey-west-module.js?v=20260805-monkey-meter"></script>
   <script src="scenario-modules.js?v=20260805-seven-module-banks-v2"></script>
   <script src="loop-train-module.js?v=20260723allchoices"></script>
+  <script src="standard-scale-modules.js?v=20260807-27plus9"></script>
   <script>
   (() => {
     const root = document.getElementById('workplace-collaboration');
@@ -818,6 +853,8 @@
     };
     const requestedModule = new URLSearchParams(window.location.search).get('module') || 'workplace';
     const activeModule = window.TRANSITION_MODULES?.[requestedModule] || workplaceModule;
+    const standardScaleStages = window.STANDARD_SCALE_PROFILES?.[requestedModule] || [];
+    const standardScaleItems = standardScaleStages.flatMap((stage, stageIndex) => stage.items.map(([typeId, text], itemIndex) => ({ typeId, text, stage, stageIndex, itemIndex })));
     const moduleStructures = {
       child: {
         phases:['第一阶段｜适应规则与参与学习','第二阶段｜建立关系与表达自己','第三阶段｜面对选择与新环境'],
@@ -893,6 +930,7 @@
     let currentSecondId = null;
     let lastScores = null;
     let currentClosingCard = null;
+    const scaleAnswers = Array(standardScaleItems.length).fill(null);
     const get = (id) => root.querySelector(`#${id}`);
     const progressStorageKey = `enneagram-${requestedModule}-progress-v1`;
     function saveProgress() {
@@ -900,6 +938,8 @@
       try {
         localStorage.setItem(progressStorageKey, JSON.stringify({
           answers: answers.slice(),
+          scaleAnswers: scaleAnswers.slice(),
+          scaleComplete: Boolean(standardScaleItems.length && scaleAnswers.every((answer) => answer !== null)),
           index,
           savedAt: new Date().toISOString()
         }));
@@ -915,6 +955,10 @@
         const validAnswers = saved.answers.every((answer) => answer === null || Number.isInteger(answer) && answer >= 0 && answer < 3);
         if (!validAnswers || !saved.answers.some((answer) => answer !== null)) return false;
         saved.answers.forEach((answer, sceneIndex) => { answers[sceneIndex] = answer; });
+        if (Array.isArray(saved.scaleAnswers) && saved.scaleAnswers.length === scaleAnswers.length) {
+          const validScaleAnswers = saved.scaleAnswers.every((answer) => answer === null || Number.isInteger(answer) && answer >= 0 && answer <= 4);
+          if (validScaleAnswers) saved.scaleAnswers.forEach((answer, scaleIndex) => { scaleAnswers[scaleIndex] = answer; });
+        }
         index = Number.isInteger(saved.index) && saved.index >= 0 && saved.index < scenes.length
           ? saved.index
           : saved.answers.findIndex((answer) => answer === null);
@@ -1082,9 +1126,12 @@
         if (!pair) return;
         raw[pair[0]]+=2;
       });
-      const normalized=Object.fromEntries(Object.entries(raw).map(([id,value]) => [id,value/(opportunity[id]||1)]));
-      const total=Object.values(normalized).reduce((sum,value) => sum+value,0) || 1;
-      return Object.fromEntries(Object.entries(normalized).map(([id,value]) => [id,Math.round(value/total*1000)/10]));
+      const scenarioIndex=Object.fromEntries(Object.entries(raw).map(([id,value]) => [id, value/(opportunity[id]||1)]));
+      const scaleIndex=Object.fromEntries(Object.keys(labels).map((id) => [id,0]));
+      standardScaleItems.forEach((item, itemIndex) => { const answer=scaleAnswers[itemIndex]; if(answer !== null) scaleIndex[item.typeId] = answer / 4; });
+      const combined=Object.fromEntries(Object.keys(labels).map((id) => [id, standardScaleItems.length ? scenarioIndex[id] * .4 + scaleIndex[id] * .6 : scenarioIndex[id]]));
+      const total=Object.values(combined).reduce((sum,value) => sum+value,0) || 1;
+      return Object.fromEntries(Object.entries(combined).map(([id,value]) => [id,Math.round(value/total*1000)/10]));
     }
     // Report length follows the actual distance between normalized shares.
     // A tied runner-up is shown together so equal second and third places are not split.
@@ -1199,7 +1246,7 @@
       if (!sourceBody || !scoreBody || !actionMap) return;
       sourceBody.replaceChildren(); scoreBody.replaceChildren();
       get('journey-audit-source-title').textContent='主类型归因依据';
-      get('journey-audit-score-title').textContent='27 题计分记录';
+      get('journey-audit-score-title').textContent=standardScaleItems.length ? '27 道情境题 + 9 道量表题计分记录' : '27 题计分记录';
       sourceBody.closest('table').querySelector('thead tr').innerHTML='<th>类型</th><th>主类型判断依据</th><th>页面命名</th>';
       scoreBody.closest('table').querySelector('thead tr').innerHTML='<th>题目</th><th>选项</th><th>计入类型</th><th>计分理由</th>';
       Object.keys(enneagramTypeNames).forEach((id) => {
@@ -1215,6 +1262,12 @@
         const auditKey=`${sceneIndex}:${choiceIndex}`;
         const note=activeModule.auditNotes?.[sceneIndex]?.[choiceIndex] || journeyAuditNotes[auditKey] || `先“${action}”。`;
         row.innerHTML=`<td><strong>第 ${String(sceneIndex+1).padStart(2,'0')} 题 · ${scene.title}</strong><span class="audit-question">${scene.text}</span></td><td class="audit-choice">${choice}</td><td><strong>${enneagramTypeNames[pair[0]]}</strong><br><span class="audit-score">+2 分</span></td><td>${note}，因此计入这一类型。</td>`;
+        scoreBody.append(row);
+      });
+      standardScaleItems.forEach((item, itemIndex) => {
+        const answer=scaleAnswers[itemIndex]; if (answer === null) return;
+        const row=document.createElement('tr');
+        row.innerHTML=`<td><strong>量表 ${String(itemIndex+1).padStart(2,'0')} · ${item.stage.title}</strong><span class="audit-question">${item.text}</span></td><td class="audit-choice">${scaleLabels[answer]}</td><td><strong>${enneagramTypeNames[item.typeId]}</strong><br><span class="audit-score">${answer * 2} 分</span></td><td>量表部分占综合指数的 60%；“${scaleLabels[answer]}”对应 ${answer * 2} 分，因此计入这一类型。</td>`;
         scoreBody.append(row);
       });
     }
@@ -1492,6 +1545,37 @@
       const selected=answers[index];
       get('back').disabled = index === 0; get('next').disabled = selected === null; get('next').textContent = index === scenes.length - 1 ? '生成我的结果' : '继续下一天'; saveProgress();
     }
+    const scaleLabels = ['完全不符合','较不符合','说不准','较符合','完全符合'];
+    function renderStandardScale() {
+      const rows=get('scale-rows');
+      if (!standardScaleItems.length) { prepareResults(); return; }
+      rows.replaceChildren();
+      standardScaleStages.forEach((stage, stageIndex) => {
+        const group=document.createElement('section'); group.className='scale-group';
+        group.innerHTML=`<header><p>${stage.title}</p><div>${stage.logic}</div></header>`;
+        stage.items.forEach(([,text], itemIndex) => {
+          const answerIndex=standardScaleItems.findIndex((item) => item.stageIndex===stageIndex && item.itemIndex===itemIndex);
+          const row=document.createElement('article'); row.className='scale-row';
+          const title=document.createElement('h3'); title.innerHTML=`<small>${String(answerIndex + 1).padStart(2,'0')}</small>${text}`;
+          const control=document.createElement('div'); control.className='scale-control';
+          const left=document.createElement('span'); left.className='scale-end'; left.textContent='完全不符合';
+          const points=document.createElement('div'); points.className='scale-points'; points.setAttribute('role','group'); points.setAttribute('aria-label',text);
+          scaleLabels.forEach((label, value) => {
+            const button=document.createElement('button'); button.type='button'; button.className='scale-point'; button.title=label; button.setAttribute('aria-label',label); button.setAttribute('aria-pressed',String(scaleAnswers[answerIndex]===value));
+            button.addEventListener('click',() => { scaleAnswers[answerIndex]=value; saveProgress(); renderStandardScale(); });
+            points.append(button);
+          });
+          const right=document.createElement('span'); right.className='scale-end'; right.textContent='完全符合';
+          control.append(left,points,right); row.append(title,control); group.append(row);
+        });
+        rows.append(group);
+      });
+      get('finish-scale').disabled=scaleAnswers.some((answer) => answer===null);
+    }
+    function showStandardScale() {
+      get('story-intro').hidden=true; get('assessment').hidden=true; get('result-preview').hidden=true; get('result').hidden=true;
+      get('scale-assessment').hidden=false; renderStandardScale(); window.scrollTo(0,0);
+    }
     function drawRadar(values) {
       const target=get('radar'); target.replaceChildren();
       const ids=Object.keys(labels); const cx=310,cy=208,r=138;
@@ -1666,7 +1750,13 @@
       root.querySelectorAll('[data-framework]').forEach(button=>button.setAttribute('aria-pressed','false'));
     }
     function prepareResults() {
+      if (standardScaleItems.length && scaleAnswers.some((answer) => answer === null)) { showStandardScale(); return; }
       saveCompletedResult();
+      if (standardScaleItems.length) {
+        get('result-preview-kicker').textContent='27 SCENES + 9 SCALE ITEMS COMPLETE';
+        get('result-preview-title').textContent='三十六道回答，已经完成';
+        get('result-preview-copy').textContent='情境里的第一反应和三阶段量表已合并。现在查看这次的应对倾向。';
+      }
       if (activeModule.loopState) {
         get('result-preview-title').textContent = '三次回环，你留下了一条应对路线';
         get('result-preview-copy').textContent = loopCompletionCopy();
@@ -1833,7 +1923,9 @@
         :'占比直接来自本次 27 题所选策略的加权累计；雷达图按最高项展开，方便看出相对差异。它描述的是故事题目中的选择偏好，不是经过常模验证的九型人格诊断。';
       if(isJourney){
         get('johari-title').textContent='这次，你的偏差出现在哪里';
-        get('result-note').textContent=`每题只计入一个主类型 +2 分。${journeyFeatureRuleCopy(journeyProfile)}它描述的是故事题中的选择偏好，不是人格诊断或人群常模。`;
+        get('result-note').textContent=standardScaleItems.length
+          ?`27 道情境题每题计入一个主类型 +2 分；9 道量表按完全不符合至完全符合记 0、2、4、6、8 分，并以情境题 40% + 量表题 60% 合成结果。${journeyFeatureRuleCopy(journeyProfile)}它描述的是本次回答中的倾向，不是人格诊断或人群常模。`
+          :`每题只计入一个主类型 +2 分。${journeyFeatureRuleCopy(journeyProfile)}它描述的是故事题中的选择偏好，不是人格诊断或人群常模。`;
         root.querySelector('#johari .johari-heading > p:first-child').textContent='SEE THE GAP';
         root.querySelector('#johari .johari-heading > p:last-child').textContent='先看哪种做法正在帮到你，再看它在哪些场景容易开得过大，以及下一次可以补上的一步。';
         const headings=['正在帮到你的','可能用力过头的','需要说清的','可以补上的一步'];
@@ -1855,7 +1947,7 @@
       renderRankings(detailedReport?reportShares:values,close,reportShares); if (detailedReport) renderJourneyCenters(reportShares); renderJohari(values); renderClosingAction(topId,Boolean(actionMap),actionMap); if (isJourney) formalizeJourneyResultLanguage(); revealReportSections(); window.scrollTo(0,0);
     }
     function saveCompletedResult(actionMap = activeModule.actionMap || transitionActionMaps[requestedModule] || null) {
-      if (!actionMap || answers.some((answer) => answer === null)) return;
+      if (!actionMap || answers.some((answer) => answer === null) || standardScaleItems.length && scaleAnswers.some((answer) => answer === null)) return;
       const values=isJourneyStyle
         ? journeyRelativeValues(journeyPersonalityShares(actionMap))
         : score(scenes,answers,actionMap);
@@ -1863,6 +1955,7 @@
         stageId: requestedModule,
         stageName: activeModule.title,
         answers: answers.slice(),
+        scaleAnswers: scaleAnswers.slice(),
         scores: isJourneyStyle ? journeyPersonalityShares(actionMap) : values,
       });
     }
@@ -1880,6 +1973,8 @@
       overlay.querySelector('button').addEventListener('click',()=>{overlay.remove();continueStory();},{once:true}); document.body.append(overlay); overlay.querySelector('button').focus();
     }
     get('begin-story').addEventListener('click',()=>{get('story-intro').hidden=true;get('result-preview').hidden=true;get('result').hidden=true;get('assessment').hidden=false;render();window.scrollTo(0,0);});
+    get('back-from-scale').addEventListener('click',()=>{get('scale-assessment').hidden=true;get('assessment').hidden=false;render();window.scrollTo(0,0);});
+    get('finish-scale').addEventListener('click',()=>{if(scaleAnswers.some((answer) => answer===null)) return; saveProgress(); get('scale-assessment').hidden=true; prepareResults();});
     get('back').addEventListener('click',()=>{ if(index>0){index-=1;render();} });
     get('next').addEventListener('click',()=>{ if(index<scenes.length-1){index+=1;render();}else prepareResults(); });
     get('open-results').addEventListener('click',()=>{get('result-preview').hidden=true;results();});
@@ -1888,7 +1983,7 @@
     get('toggle-journey-audit').addEventListener('click',()=>{const content=get('journey-audit-content');const expanded=content.hidden;content.hidden=!expanded;get('toggle-journey-audit').setAttribute('aria-expanded',String(expanded));get('toggle-journey-audit').textContent=expanded?'收起评分依据':'查看评分依据';});
     root.querySelectorAll('[data-framework]').forEach(button=>button.addEventListener('click',()=>renderActionFramework(button.dataset.framework)));
     get('practice-action').addEventListener('click',()=>{try{localStorage.setItem(`enneagram-${requestedModule}-practice`,JSON.stringify({savedAt:new Date().toISOString(),card:currentClosingCard}));get('card-status').textContent='已设为 3 天练习，回来看一看这一步是否真的发生。';get('practice-action').textContent='已设为 3 天练习';}catch{get('card-status').textContent='当前浏览器未允许保存，请复制这句提醒后自行设一个 3 天后的回看。';}});
-    get('restart').addEventListener('click',()=>{root.classList.remove('has-result-surface');document.body.classList.remove('is-journey-result');answers.fill(null);index=0;currentTopId=null;currentSecondId=null;lastScores=null;currentClosingCard=null;clearSavedProgress();get('assessment').hidden=false;get('story-intro').hidden=true;get('result-preview').hidden=true;get('result').hidden=true;render();window.scrollTo(0,0);});
+    get('restart').addEventListener('click',()=>{root.classList.remove('has-result-surface');document.body.classList.remove('is-journey-result');answers.fill(null);scaleAnswers.fill(null);index=0;currentTopId=null;currentSecondId=null;lastScores=null;currentClosingCard=null;clearSavedProgress();get('scale-assessment').hidden=true;get('assessment').hidden=false;get('story-intro').hidden=true;get('result-preview').hidden=true;get('result').hidden=true;render();window.scrollTo(0,0);});
     applyModuleCopy();
     const restoredProgress=restoreSavedProgress();
     if (restoredProgress) get('begin-story').textContent=`继续第 ${index + 1} 题`;

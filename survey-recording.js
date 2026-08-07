@@ -5,7 +5,7 @@ const client = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 let saved = false;
 let saving = false;
 
-window.enneagramRecordResult = async ({ stageId, stageName, answers, scores }) => {
+window.enneagramRecordResult = async ({ stageId, stageName, answers, scaleAnswers = [], scores }) => {
   if (saved || saving) return;
   saving = true;
   try {
@@ -17,7 +17,7 @@ window.enneagramRecordResult = async ({ stageId, stageName, answers, scores }) =
       stage_id: stageId,
       stage_name: stageName,
       subject_kind: 'self',
-      answer_payload: { answer_indexes: answers },
+      answer_payload: { answer_indexes: answers, scale_answers: scaleAnswers },
       result_scores: scores,
     });
     if (error) throw new Error(error.message || '答题记录保存失败。');
