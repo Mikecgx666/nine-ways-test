@@ -1132,7 +1132,7 @@
       const scenarioIndex=Object.fromEntries(Object.entries(raw).map(([id,value]) => [id, value/(opportunity[id]||1)]));
       const scaleIndex=Object.fromEntries(Object.keys(labels).map((id) => [id,0]));
       standardScaleItems.forEach((item, itemIndex) => { const answer=scaleAnswers[itemIndex]; if(answer !== null) scaleIndex[item.typeId] = answer / 4; });
-      const combined=Object.fromEntries(Object.keys(labels).map((id) => [id, standardScaleItems.length ? scenarioIndex[id] * .4 + scaleIndex[id] * .6 : scenarioIndex[id]]));
+      const combined=Object.fromEntries(Object.keys(labels).map((id) => [id, standardScaleItems.length ? scenarioIndex[id] * .7 + scaleIndex[id] * .3 : scenarioIndex[id]]));
       const total=Object.values(combined).reduce((sum,value) => sum+value,0) || 1;
       return Object.fromEntries(Object.entries(combined).map(([id,value]) => [id,Math.round(value/total*1000)/10]));
     }
@@ -1274,7 +1274,7 @@
       standardScaleItems.forEach((item, itemIndex) => {
         const answer=scaleAnswers[itemIndex]; if (answer === null) return;
         const row=document.createElement('tr');
-        row.innerHTML=`<td><strong>量表 ${String(itemIndex+1).padStart(2,'0')} · ${item.stage.title}</strong><span class="audit-question">${item.text}</span></td><td class="audit-choice">${scaleLabels[answer]}</td><td><strong>${enneagramTypeNames[item.typeId]}</strong><br><span class="audit-score">${answer * 2} 分</span></td><td>量表部分占综合指数的 60%；“${scaleLabels[answer]}”对应 ${answer * 2} 分，因此计入这一类型。</td>`;
+        row.innerHTML=`<td><strong>量表 ${String(itemIndex+1).padStart(2,'0')} · ${item.stage.title}</strong><span class="audit-question">${item.text}</span></td><td class="audit-choice">${scaleLabels[answer]}</td><td><strong>${enneagramTypeNames[item.typeId]}</strong><br><span class="audit-score">${answer} 分</span></td><td>量表部分占综合指数的 30%；“${scaleLabels[answer]}”对应 ${answer} 分，因此计入这一类型。</td>`;
         scoreBody.append(row);
       });
     }
@@ -1931,7 +1931,7 @@
       if(isJourney){
         get('johari-title').textContent='这次，你的偏差出现在哪里';
         get('result-note').textContent=standardScaleItems.length
-          ?`27 道情境题每题计入一个主类型 +2 分；9 道量表按完全不符合至完全符合记 0、2、4、6、8 分，并以情境题 40% + 量表题 60% 合成结果。${journeyFeatureRuleCopy(journeyProfile)}它描述的是本次回答中的倾向，不是人格诊断或人群常模。`
+          ?`27 道情境题每题计入一个主类型 +2 分；9 道量表按完全不符合至完全符合记 0、1、2、3、4 分，并以情境题 70% + 量表题 30% 合成结果。${journeyFeatureRuleCopy(journeyProfile)}它描述的是本次回答中的倾向，不是人格诊断或人群常模。`
           :`每题只计入一个主类型 +2 分。${journeyFeatureRuleCopy(journeyProfile)}它描述的是故事题中的选择偏好，不是人格诊断或人群常模。`;
         root.querySelector('#johari .johari-heading > p:first-child').textContent='SEE THE GAP';
         root.querySelector('#johari .johari-heading > p:last-child').textContent='先看哪种做法正在帮到你，再看它在哪些场景容易开得过大，以及下一次可以补上的一步。';
