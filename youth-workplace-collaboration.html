@@ -952,7 +952,7 @@
       try {
         const saved = JSON.parse(localStorage.getItem(progressStorageKey) || 'null');
         if (!saved || !Array.isArray(saved.answers) || saved.answers.length !== scenes.length) return false;
-        const validAnswers = saved.answers.every((answer) => answer === null || Number.isInteger(answer) && answer >= 0 && answer < 3);
+        const validAnswers = saved.answers.every((answer) => answer === null || Number.isInteger(answer) && answer >= 0 && answer < 4);
         if (!validAnswers || !saved.answers.some((answer) => answer !== null)) return false;
         saved.answers.forEach((answer, sceneIndex) => { answers[sceneIndex] = answer; });
         if (Array.isArray(saved.scaleAnswers) && saved.scaleAnswers.length === scaleAnswers.length) {
@@ -1068,7 +1068,12 @@
     }
     function svg(tag, attrs, text) { const node = document.createElementNS('http://www.w3.org/2000/svg', tag); Object.entries(attrs).forEach(([key,value]) => node.setAttribute(key,value)); if (text) node.textContent = text; return node; }
     function renderJourney(activeIndex = 0) { const route=get('journey-route'); const layer=get('journey-nodes'); const length=route.getTotalLength(); layer.replaceChildren(); chapters.forEach((chapter,i)=>{const point=route.getPointAtLength(length*i/(chapters.length-1));const group=svg('g',{class:`journey-node ${i<activeIndex?'is-done':''} ${i===activeIndex?'is-active':''}`,'aria-label':chapter});group.append(svg('title',{},chapter),svg('circle',{cx:point.x,cy:point.y,r:i===activeIndex?18:14}),svg('text',{x:point.x,y:point.y},String(i+1)));layer.append(group);}); }
-    const orderedChoices = (scene, questionIndex) => scene.choices.map((choice, choiceIndex) => ({ choice, choiceIndex })).slice(questionIndex % 3).concat(scene.choices.map((choice, choiceIndex) => ({ choice, choiceIndex })).slice(0, questionIndex % 3));
+    const alternativeChoice = ['以上都不符合我的想法或做法'];
+    const orderedChoices = (scene, questionIndex) => {
+      const choices = scene.choices.map((choice, choiceIndex) => ({ choice, choiceIndex }));
+      const offset = questionIndex % choices.length;
+      return choices.slice(offset).concat(choices.slice(0, offset), { choice: alternativeChoice, choiceIndex: 3 });
+    };
     const score = (items, selected, actionMap = null) => {
       const primaryWeight = 2;
       const ids = Object.keys(labels); const actual = Object.fromEntries(ids.map((id) => [id,0])); const maximum = Object.fromEntries(ids.map((id) => [id,0]));
@@ -1078,13 +1083,11 @@
           actionMap[sceneIndex].forEach(([primary, secondary]) => {
             best[primary] = Math.max(best[primary], primaryWeight);
           });
-          if (selected[sceneIndex] !== null) {
-            const [primary, secondary] = actionMap[sceneIndex][selected[sceneIndex]];
-            actual[primary] += primaryWeight;
-          }
+          const selectedPair = actionMap[sceneIndex][selected[sceneIndex]];
+          if (selectedPair) actual[selectedPair[0]] += primaryWeight;
         } else {
           scene.choices.forEach(([,weights]) => Object.entries(weights).forEach(([id,value]) => best[id] = Math.max(best[id], value)));
-          if (selected[sceneIndex] !== null) Object.entries(scene.choices[selected[sceneIndex]][1]).forEach(([id,value]) => actual[id] += value);
+          if (selected[sceneIndex] !== null && scene.choices[selected[sceneIndex]]) Object.entries(scene.choices[selected[sceneIndex]][1]).forEach(([id,value]) => actual[id] += value);
         }
         ids.forEach((id) => maximum[id] += best[id]);
       });
@@ -1257,11 +1260,15 @@
       });
       scenes.forEach((scene,sceneIndex) => {
         const choiceIndex=answers[sceneIndex];
-        const pair=actionMap[sceneIndex]?.[choiceIndex]; if (!pair) return;
-        const row=document.createElement('tr'); const choiceData=scene.choices[choiceIndex]?.[0]; const choice=typeof choiceData==='object'?choiceData.copy:choiceData||''; const action=typeof choiceData==='object'?choiceData.title:choice;
+        const pair=actionMap[sceneIndex]?.[choiceIndex];
+        const row=document.createElement('tr'); const choiceData=choiceIndex===3 ? alternativeChoice[0] : scene.choices[choiceIndex]?.[0]; const choice=typeof choiceData==='object'?choiceData.copy:choiceData||''; const action=typeof choiceData==='object'?choiceData.title:choice;
         const auditKey=`${sceneIndex}:${choiceIndex}`;
         const note=activeModule.auditNotes?.[sceneIndex]?.[choiceIndex] || journeyAuditNotes[auditKey] || `先“${action}”。`;
-        row.innerHTML=`<td><strong>第 ${String(sceneIndex+1).padStart(2,'0')} 题 · ${scene.title}</strong><span class="audit-question">${scene.text}</span></td><td class="audit-choice">${choice}</td><td><strong>${enneagramTypeNames[pair[0]]}</strong><br><span class="audit-score">+2 分</span></td><td>${note}，因此计入这一类型。</td>`;
+        const scoring=pair
+          ? `<strong>${enneagramTypeNames[pair[0]]}</strong><br><span class="audit-score">+2 分</span>`
+          : '<strong>未归类</strong><br><span class="audit-score">0 分</span>';
+        const reason=pair ? `${note}，因此计入这一类型。` : '你选择了“以上都不符合我的想法或做法”。此题不归入任何类型，也不参与情境题的类型计分。';
+        row.innerHTML=`<td><strong>第 ${String(sceneIndex+1).padStart(2,'0')} 题 · ${scene.title}</strong><span class="audit-question">${scene.text}</span></td><td class="audit-choice">${choice}</td><td>${scoring}</td><td>${reason}</td>`;
         scoreBody.append(row);
       });
       standardScaleItems.forEach((item, itemIndex) => {
@@ -1541,7 +1548,7 @@
     }
     function render() {
       const scene = scenes[index]; const progress = (index + 1) / scenes.length * 100; const structure=structureAt(index); renderJourney(index); renderLoopState(); get('progress').textContent = `${[structure.phase,structure.module,chapters[index]].filter(Boolean).join(' · ')}  ${index + 1} / ${scenes.length}`; get('meter-fill').style.width = `${progress}%`; moveMeterCat(progress); get('scene-title').textContent = scene.title; get('scene-text').textContent = scene.text;
-      const choices = get('choices'); choices.replaceChildren(); orderedChoices(scene,index).forEach(({choice,choiceIndex},displayIndex) => { const button = document.createElement('button'); button.type = 'button'; button.className = 'choice'; button.dataset.letter = String.fromCharCode(65 + displayIndex); const choiceData=choice[0]; const title=document.createElement('strong'); title.textContent=typeof choiceData==='object'&&choiceData!==null?choiceData.title:choiceData; button.append(title); if(typeof choiceData==='object'&&choiceData?.copy){const copy=document.createElement('small');copy.textContent=choiceData.copy;button.append(copy);} button.setAttribute('aria-pressed', String(answers[index] === choiceIndex)); button.addEventListener('click', (event) => { if (answers[index] === choiceIndex) return; answers[index] = choiceIndex; button.classList.add('is-chosen'); burstFromChoice(button,event); window.setTimeout(render, 180); }); choices.append(button); });
+      const choices = get('choices'); choices.replaceChildren(); orderedChoices(scene,index).forEach(({choice,choiceIndex},displayIndex) => { const button = document.createElement('button'); button.type = 'button'; button.className = 'choice'; button.dataset.letter = String.fromCharCode(65 + displayIndex); const choiceData=choice[0]; const title=document.createElement('strong'); title.textContent=typeof choiceData==='object'&&choiceData!==null?choiceData.title:choiceData; button.append(title); if(typeof choiceData==='object'&&choiceData?.copy){const copy=document.createElement('small');copy.textContent=choiceData.copy;button.append(copy);} if(choiceIndex===3) button.classList.add('unmatched-choice'); button.setAttribute('aria-pressed', String(answers[index] === choiceIndex)); button.addEventListener('click', (event) => { if (answers[index] === choiceIndex) return; answers[index] = choiceIndex; button.classList.add('is-chosen'); burstFromChoice(button,event); window.setTimeout(render, 180); }); choices.append(button); });
       const selected=answers[index];
       get('back').disabled = index === 0; get('next').disabled = selected === null; get('next').textContent = index === scenes.length - 1 ? '生成我的结果' : '继续下一天'; saveProgress();
     }
@@ -1589,8 +1596,8 @@
       const evidenceList=get('evidence-list'); evidenceList.replaceChildren();
       ordered.slice(0,3).forEach(([id], rankIndex) => {
         const entries=scenes.map((scene, sceneIndex) => {
-          const choiceIndex=answers[sceneIndex]; const pair=actionMap[sceneIndex][choiceIndex];
-          if (!pair.includes(Number(id))) return null;
+          const choiceIndex=answers[sceneIndex]; const pair=actionMap[sceneIndex]?.[choiceIndex];
+          if (!pair || !pair.includes(Number(id))) return null;
           return { scene, sceneIndex, choice:scene.choices[choiceIndex][0], primary:pair[0]===Number(id) };
         }).filter(Boolean).sort((a,b)=>Number(b.primary)-Number(a.primary)).slice(0,2);
         const group=document.createElement('article'); group.className='evidence-group';
