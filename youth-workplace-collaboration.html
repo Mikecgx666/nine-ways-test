@@ -931,6 +931,7 @@
     let lastScores = null;
     let currentClosingCard = null;
     let reviewMode = false;
+    let reviewAnsweredThrough = -1;
     let activeScaleStage = 0;
     let scaleReviewMode = false;
     const scaleAnswers = Array(standardScaleItems.length).fill(null);
@@ -966,6 +967,12 @@
         if (stageScenesComplete && !isScaleStageComplete(stageIndex)) return stageIndex;
       }
       return null;
+    }
+    function highestAnsweredSceneIndex() {
+      for (let sceneIndex = answers.length - 1; sceneIndex >= 0; sceneIndex -= 1) {
+        if (answers[sceneIndex] !== null) return sceneIndex;
+      }
+      return -1;
     }
     function restoreSavedProgress() {
       try {
@@ -1574,6 +1581,7 @@
       if (index < scenes.length - 1) {
         index += 1;
         reviewMode=false;
+        reviewAnsweredThrough=-1;
         render();
         return;
       }
@@ -1581,10 +1589,11 @@
     }
     function render() {
       const scene = scenes[index]; const progress = (index + 1) / scenes.length * 100; const structure=structureAt(index); renderJourney(index); renderLoopState(); get('progress').textContent = `${[structure.phase,structure.module,chapters[index]].filter(Boolean).join(' · ')}  ${index + 1} / ${scenes.length}`; get('meter-fill').style.width = `${progress}%`; moveMeterCat(progress); get('scene-title').textContent = scene.title; get('scene-text').textContent = scene.text;
-      const choices = get('choices'); choices.replaceChildren(); orderedChoices(scene,index).forEach(({choice,choiceIndex},displayIndex) => { const button = document.createElement('button'); button.type = 'button'; button.className = 'choice'; button.dataset.letter = String.fromCharCode(65 + displayIndex); const choiceData=choice[0]; const title=document.createElement('strong'); title.textContent=typeof choiceData==='object'&&choiceData!==null?choiceData.title:choiceData; button.append(title); if(typeof choiceData==='object'&&choiceData?.copy){const copy=document.createElement('small');copy.textContent=choiceData.copy;button.append(copy);} if(choiceIndex===3) button.classList.add('unmatched-choice'); button.setAttribute('aria-pressed', String(answers[index] === choiceIndex)); button.addEventListener('click', (event) => { if (answers[index] === choiceIndex) return; answers[index] = choiceIndex; button.classList.add('is-chosen'); burstFromChoice(button,event); saveProgress(); if (reviewMode) { window.setTimeout(render, 180); return; } window.setTimeout(advanceFromScene, 180); }); choices.append(button); });
+      const choices = get('choices'); choices.replaceChildren(); orderedChoices(scene,index).forEach(({choice,choiceIndex},displayIndex) => { const button = document.createElement('button'); button.type = 'button'; button.className = 'choice'; button.dataset.letter = String.fromCharCode(65 + displayIndex); const choiceData=choice[0]; const title=document.createElement('strong'); title.textContent=typeof choiceData==='object'&&choiceData!==null?choiceData.title:choiceData; button.append(title); if(typeof choiceData==='object'&&choiceData?.copy){const copy=document.createElement('small');copy.textContent=choiceData.copy;button.append(copy);} if(choiceIndex===3) button.classList.add('unmatched-choice'); button.setAttribute('aria-pressed', String(answers[index] === choiceIndex)); button.addEventListener('click', (event) => { if (answers[index] === choiceIndex) return; const wasAlreadyAnswered=answers[index] !== null; answers[index] = choiceIndex; button.classList.add('is-chosen'); burstFromChoice(button,event); saveProgress(); if (reviewMode && wasAlreadyAnswered && index <= reviewAnsweredThrough) { window.setTimeout(render, 180); return; } reviewMode=false; reviewAnsweredThrough=-1; window.setTimeout(advanceFromScene, 180); }); choices.append(button); });
       const selected=answers[index];
       const endsStructure=standardScaleItems.length && index % 9 === 8;
-      get('back').disabled = index === 0; get('next').hidden=!reviewMode; get('next').disabled = selected === null; get('next').textContent = endsStructure ? '继续量表校验' : index === scenes.length - 1 ? '生成我的结果' : '下一题'; saveProgress();
+      const isAnsweredReview=reviewMode && selected !== null && index <= reviewAnsweredThrough;
+      get('back').disabled = index === 0; get('next').hidden=!isAnsweredReview; get('next').disabled = selected === null; get('next').textContent = endsStructure ? '继续量表校验' : index === scenes.length - 1 ? '生成我的结果' : '下一题'; saveProgress();
     }
     const scaleLabels = ['完全不符合','较不符合','说不准','较符合','完全符合'];
     function renderStandardScale() {
@@ -1639,7 +1648,8 @@
       get('scale-assessment').hidden=true;
       if (stageIndex >= standardScaleStages.length - 1) { prepareResults(); return; }
       index=Math.min(scenes.length - 1, (stageIndex + 1) * 9);
-      reviewMode=false;
+      reviewMode=reviewMode && index <= reviewAnsweredThrough;
+      if (!reviewMode) reviewAnsweredThrough=-1;
       get('assessment').hidden=false;
       render();
       window.scrollTo(0,0);
@@ -2042,17 +2052,17 @@
       overlay.querySelector('button').addEventListener('click',()=>{overlay.remove();continueStory();},{once:true}); document.body.append(overlay); overlay.querySelector('button').focus();
     }
     get('begin-story').addEventListener('click',()=>{const requiredScaleStage=nextRequiredScaleStage();get('story-intro').hidden=true;get('result-preview').hidden=true;get('result').hidden=true;if(requiredScaleStage!==null){showStandardScale(requiredScaleStage);return;}get('assessment').hidden=false;render();window.scrollTo(0,0);});
-    get('back-from-scale').addEventListener('click',()=>{saveProgress();get('scale-assessment').hidden=true;index=Math.max(0,activeScaleStage*9+8);reviewMode=true;get('assessment').hidden=false;render();window.scrollTo(0,0);});
+    get('back-from-scale').addEventListener('click',()=>{saveProgress();get('scale-assessment').hidden=true;index=Math.max(0,activeScaleStage*9+8);reviewMode=true;reviewAnsweredThrough=highestAnsweredSceneIndex();get('assessment').hidden=false;render();window.scrollTo(0,0);});
     get('finish-scale').addEventListener('click',()=>{if(!isScaleStageComplete(activeScaleStage)) return; advanceAfterScaleStage(activeScaleStage);});
-    get('back').addEventListener('click',()=>{ if(index>0){index-=1;reviewMode=true;saveProgress();render();} });
-    get('next').addEventListener('click',()=>{ if(answers[index]===null) return; if(standardScaleItems.length && index%9===8){showStandardScale(Math.floor(index/9),true);return;} if(index<scenes.length-1){index+=1;saveProgress();render();}else prepareResults(); });
+    get('back').addEventListener('click',()=>{ if(index>0){reviewAnsweredThrough=highestAnsweredSceneIndex();index-=1;reviewMode=true;saveProgress();render();} });
+    get('next').addEventListener('click',()=>{ if(answers[index]===null) return; if(standardScaleItems.length && index%9===8){showStandardScale(Math.floor(index/9),true);return;} if(index<scenes.length-1){index+=1;if(index>reviewAnsweredThrough){reviewMode=false;reviewAnsweredThrough=-1;}saveProgress();render();}else prepareResults(); });
     get('open-results').addEventListener('click',()=>{get('result-preview').hidden=true;results();});
     get('download-journey-report').addEventListener('click',downloadJourneyWordReport);
     get('toggle-evidence').addEventListener('click',()=>{const list=get('evidence-list');const expanded=list.hidden;list.hidden=!expanded;get('toggle-evidence').setAttribute('aria-expanded',String(expanded));get('toggle-evidence').textContent=expanded?'收起选择依据':'查看选择依据';});
     get('toggle-journey-audit').addEventListener('click',()=>{const content=get('journey-audit-content');const expanded=content.hidden;content.hidden=!expanded;get('toggle-journey-audit').setAttribute('aria-expanded',String(expanded));get('toggle-journey-audit').textContent=expanded?'收起评分依据':'查看评分依据';});
     root.querySelectorAll('[data-framework]').forEach(button=>button.addEventListener('click',()=>renderActionFramework(button.dataset.framework)));
     get('practice-action').addEventListener('click',()=>{try{localStorage.setItem(`enneagram-${requestedModule}-practice`,JSON.stringify({savedAt:new Date().toISOString(),card:currentClosingCard}));get('card-status').textContent='已设为 3 天练习，回来看一看这一步是否真的发生。';get('practice-action').textContent='已设为 3 天练习';}catch{get('card-status').textContent='当前浏览器未允许保存，请复制这句提醒后自行设一个 3 天后的回看。';}});
-    get('restart').addEventListener('click',()=>{root.classList.remove('has-result-surface');document.body.classList.remove('is-journey-result');answers.fill(null);scaleAnswers.fill(null);index=0;reviewMode=false;activeScaleStage=0;scaleReviewMode=false;currentTopId=null;currentSecondId=null;lastScores=null;currentClosingCard=null;clearSavedProgress();get('scale-assessment').hidden=true;get('assessment').hidden=false;get('story-intro').hidden=true;get('result-preview').hidden=true;get('result').hidden=true;render();window.scrollTo(0,0);});
+    get('restart').addEventListener('click',()=>{root.classList.remove('has-result-surface');document.body.classList.remove('is-journey-result');answers.fill(null);scaleAnswers.fill(null);index=0;reviewMode=false;reviewAnsweredThrough=-1;activeScaleStage=0;scaleReviewMode=false;currentTopId=null;currentSecondId=null;lastScores=null;currentClosingCard=null;clearSavedProgress();get('scale-assessment').hidden=true;get('assessment').hidden=false;get('story-intro').hidden=true;get('result-preview').hidden=true;get('result').hidden=true;render();window.scrollTo(0,0);});
     applyModuleCopy();
     const restoredProgress=restoreSavedProgress();
     if (restoredProgress) get('begin-story').textContent=`继续第 ${index + 1} 题`;
