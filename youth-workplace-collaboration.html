@@ -60,11 +60,11 @@
     .scale-end:last-child { text-align:right; }
     .scale-points { display:flex; align-items:center; justify-content:space-between; gap:14px; }
     .scale-point { display:grid; place-items:center; width:54px; height:54px; cursor:pointer; border:2px solid transparent; border-radius:50%; color:#fff; font-size:0; transition:transform .12s ease,box-shadow .12s ease,filter .12s ease; }
-    .scale-point:nth-child(1) { width:62px; height:62px; background:#8faab1; border-color:#6e8f98; }
-    .scale-point:nth-child(2) { width:58px; height:58px; background:#b2a4be; border-color:#92809f; }
-    .scale-point:nth-child(3) { background:#c8ad77; border-color:#a88b56; }
-    .scale-point:nth-child(4) { width:58px; height:58px; background:#92b8a8; border-color:#709886; }
-    .scale-point:nth-child(5) { width:62px; height:62px; background:#c7959e; border-color:#a8747f; }
+    .scale-point:nth-child(1) { width:62px; height:62px; background:#5f98c6; border-color:#3e76a2; }
+    .scale-point:nth-child(2) { width:58px; height:58px; background:#9273bc; border-color:#73539c; }
+    .scale-point:nth-child(3) { background:#d3a148; border-color:#aa7b26; }
+    .scale-point:nth-child(4) { width:58px; height:58px; background:#5d9d7c; border-color:#3f7d5e; }
+    .scale-point:nth-child(5) { width:62px; height:62px; background:#c76f73; border-color:#a75258; }
     .scale-point:hover,.scale-point:focus-visible { outline:0; transform:translateY(-3px); filter:brightness(1.04); box-shadow:0 4px 0 rgba(49,76,80,.24); }
     .scale-point[aria-pressed="true"] { transform:translateY(-3px) scale(1.08); box-shadow:0 0 0 4px #fff,0 0 0 7px currentColor,0 5px 0 rgba(49,76,80,.22); }
     .scale-point[aria-pressed="true"]::after { content:"✓"; color:#fff; font-size:27px; font-weight:900; line-height:1; }
@@ -1628,9 +1628,10 @@
           const points=document.createElement('div'); points.className='scale-points'; points.setAttribute('role','group'); points.setAttribute('aria-label',text);
           scaleLabels.forEach((label, value) => {
             const button=document.createElement('button'); button.type='button'; button.className='scale-point'; button.title=label; button.setAttribute('aria-label',label); button.setAttribute('aria-pressed',String(scaleAnswers[answerIndex]===value));
-            button.addEventListener('click',() => {
+            button.addEventListener('click',(event) => {
               const wasAlreadyAnswered=scaleAnswers[answerIndex] !== null;
               scaleAnswers[answerIndex]=value;
+              burstFromChoice(button,event);
               saveProgress();
               if (scaleReviewMode && wasAlreadyAnswered && activeScaleItem <= scaleReviewThrough) { renderStandardScale(); return; }
               scaleReviewMode=false;
@@ -2075,7 +2076,7 @@
     get('begin-story').addEventListener('click',()=>{const requiredScaleStage=nextRequiredScaleStage();get('story-intro').hidden=true;get('result-preview').hidden=true;get('result').hidden=true;if(requiredScaleStage!==null){showStandardScale(requiredScaleStage);return;}get('assessment').hidden=false;render();window.scrollTo(0,0);});
     get('back-from-scale').addEventListener('click',()=>{saveProgress();if(activeScaleItem>0){scaleReviewThrough=highestAnsweredScaleItem(activeScaleStage);activeScaleItem-=1;scaleReviewMode=true;renderStandardScale();window.scrollTo(0,0);return;}get('scale-assessment').hidden=true;index=Math.max(0,activeScaleStage*9+8);reviewMode=true;reviewAnsweredThrough=highestAnsweredSceneIndex();get('assessment').hidden=false;render();window.scrollTo(0,0);});
     get('finish-scale').addEventListener('click',()=>{const stage=standardScaleStages[activeScaleStage];const answerIndex=standardScaleItems.findIndex((item) => item.stageIndex===activeScaleStage && item.itemIndex===activeScaleItem);if(scaleAnswers[answerIndex]===null) return;if(activeScaleItem<stage.items.length-1){activeScaleItem+=1;if(activeScaleItem>scaleReviewThrough){scaleReviewMode=false;scaleReviewThrough=-1;}renderStandardScale();return;}advanceAfterScaleStage(activeScaleStage);});
-    get('back').addEventListener('click',()=>{ if(index>0){reviewAnsweredThrough=highestAnsweredSceneIndex();index-=1;reviewMode=true;saveProgress();render();} });
+    get('back').addEventListener('click',()=>{ if(index>0){reviewAnsweredThrough=highestAnsweredSceneIndex();if(standardScaleItems.length && index%9===0){showStandardScale(Math.floor(index/9)-1,true);activeScaleItem=standardScaleStages[activeScaleStage].items.length-1;scaleReviewThrough=highestAnsweredScaleItem(activeScaleStage);renderStandardScale();return;}index-=1;reviewMode=true;saveProgress();render();} });
     get('next').addEventListener('click',()=>{ if(answers[index]===null) return; if(standardScaleItems.length && index%9===8){showStandardScale(Math.floor(index/9),true);return;} if(index<scenes.length-1){index+=1;if(index>reviewAnsweredThrough){reviewMode=false;reviewAnsweredThrough=-1;}saveProgress();render();}else prepareResults(); });
     get('open-results').addEventListener('click',()=>{get('result-preview').hidden=true;results();});
     get('download-journey-report').addEventListener('click',downloadJourneyWordReport);
