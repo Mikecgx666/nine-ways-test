@@ -16,7 +16,10 @@
     .number-warmup__number:hover, .number-warmup__number:focus-visible { transform:translate(-50%,-50%) rotate(var(--number-angle)) scale(1.08); box-shadow:6px 6px 0 #17151f; outline:0; }
     .number-warmup__number.is-wrong { animation:number-warmup-shake .28s linear; background:#ff4d5e; }
     .number-warmup__number.is-found { animation:number-warmup-pop .25s ease forwards; pointer-events:none; }
+    .number-warmup__footer { display:flex; justify-content:space-between; align-items:center; gap:16px; min-height:28px; }
     .number-warmup__hint { min-height:24px; margin:0; font-size:14px; font-weight:700; }
+    .number-warmup__skip { padding:4px 0; border:0; background:transparent; color:#365f63; font-size:14px; font-weight:900; text-decoration:underline; text-underline-offset:4px; cursor:pointer; }
+    .number-warmup__skip:hover,.number-warmup__skip:focus-visible { color:#17151f; outline:0; }
     .number-warmup.is-complete .number-warmup__stage { border-style:solid; background:#7ae36e; animation:number-warmup-flash .45s ease; }
     @keyframes number-warmup-shake { 25% { margin-left:-7px; } 75% { margin-left:7px; } }
     @keyframes number-warmup-pop { to { opacity:0; transform:translate(-50%,-50%) rotate(var(--number-angle)) scale(1.7); } }
@@ -49,7 +52,11 @@
     const stage = create('div', 'number-warmup__stage');
     const hint = create('p', 'number-warmup__hint', '先找到 3。');
     hint.setAttribute('aria-live', 'polite');
-    body.append(title, copy, stage, hint);
+    const footer = create('div', 'number-warmup__footer');
+    const skip = create('button', 'number-warmup__skip', '直接跳过');
+    skip.type = 'button';
+    footer.append(hint, skip);
+    body.append(title, copy, stage, footer);
     panel.append(topline, body);
     overlay.append(panel);
     document.body.append(overlay);
@@ -61,6 +68,8 @@
       overlay.remove();
       root.removeAttribute('aria-hidden');
     };
+
+    skip.addEventListener('click', leave);
 
     const placeNumbers = () => {
       const colors = ['#ffd33d', '#39baff', '#ff4d5e', '#7ae36e', '#d8a8ff', '#ffad66', '#d7df61', '#95d4d0', '#fff'];
