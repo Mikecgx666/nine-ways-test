@@ -1960,7 +1960,6 @@
       ].join('');
     }
     function downloadJourneyWordReport() {
-      if (!isJourneyStyle) return;
       const actionMap=activeModule.actionMap || transitionActionMaps[requestedModule];
       if (!actionMap || answers.some((answer) => answer===null)) return;
       const reportBody=buildJourneyWordReport(actionMap);
