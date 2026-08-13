@@ -36,7 +36,7 @@
     .scene-main.has-illustration { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr); column-gap:clamp(24px,4vw,52px); align-items:center; padding-bottom:22px; }
     .scene-main.has-illustration h2 { grid-column:1 / -1; }
     .scene-main.has-illustration #scene-text { margin:12px 0 0; }
-    .scene-illustration { display:block; width:100%; height:auto; max-height:360px; margin:12px 0 0; object-fit:contain; border:1px solid rgba(33,46,53,.22); border-radius:4px; }
+    .scene-illustration { display:block; width:100%; aspect-ratio:16 / 9; margin:12px 0 0; object-fit:cover; border:1px solid rgba(33,46,53,.22); border-radius:4px; }
     @media (max-width:720px) { .scene-main.has-illustration { display:block; } .scene-illustration { width:100%; max-width:420px; margin:16px auto 0; } }
     #scene-text { margin:20px 0 0; font-family:"Noto Serif SC","Songti SC",serif; font-size:clamp(18px,2.2vw,24px); line-height:1.65; }
     .choices { display:grid; gap:12px; margin-top:30px; }
@@ -948,6 +948,7 @@
     const scaleAnswers = Array(standardScaleItems.length).fill(null);
     const get = (id) => root.querySelector(`#${id}`);
     const progressStorageKey = `enneagram-${requestedModule}-progress-v1`;
+    const progressTtlMs = 10 * 60 * 1000;
     function saveProgress() {
       if (!answers.some((answer) => answer !== null)) return;
       try {
@@ -956,7 +957,8 @@
           scaleAnswers: scaleAnswers.slice(),
           scaleComplete: Boolean(standardScaleItems.length && scaleAnswers.every((answer) => answer !== null)),
           index,
-          savedAt: new Date().toISOString()
+          savedAt: new Date().toISOString(),
+          updatedAt: Date.now()
         }));
       } catch {}
     }
@@ -995,6 +997,11 @@
     function restoreSavedProgress() {
       try {
         const saved = JSON.parse(localStorage.getItem(progressStorageKey) || 'null');
+        const savedAt = Number(saved?.updatedAt);
+        if (!Number.isFinite(savedAt) || Date.now() - savedAt > progressTtlMs) {
+          clearSavedProgress();
+          return false;
+        }
         if (!saved || !Array.isArray(saved.answers) || saved.answers.length !== scenes.length) return false;
         const validAnswers = saved.answers.every((answer) => answer === null || Number.isInteger(answer) && answer >= 0 && answer < 4);
         if (!validAnswers || !saved.answers.some((answer) => answer !== null)) return false;
@@ -1607,7 +1614,7 @@
     }
     const scenarioImageModules = { child:'child', teen:'teen', adult:'adult', integration:'integration', college:'college', journey:'journey' };
     function render() {
-      const scene = scenes[index]; const progress = (index + 1) / scenes.length * 100; const structure=structureAt(index); renderJourney(index); renderLoopState(); get('progress').textContent = `${[structure.phase,structure.module,chapters[index]].filter(Boolean).join(' · ')}  ${index + 1} / ${scenes.length}`; get('meter-fill').style.width = `${progress}%`; moveMeterCat(progress); get('scene-title').textContent = scene.title; get('scene-text').textContent = scene.text; const sceneMain=get('scene-title').closest('.scene-main'); const oldIllustration=document.getElementById('scene-illustration'); if(oldIllustration) oldIllustration.remove(); sceneMain.classList.remove('has-illustration'); const imageModule=scenarioImageModules[requestedModule]; if(imageModule) { sceneMain.classList.add('has-illustration'); const illustration=document.createElement('img'); illustration.id='scene-illustration'; illustration.className='scene-illustration'; illustration.src=`assets/scenes/${imageModule}/${String(index + 1).padStart(2,'0')}.jpg`; illustration.alt=`${scene.title}情境插图`; illustration.loading=index === 0 ? 'eager' : 'lazy'; get('scene-text').insertAdjacentElement('afterend', illustration); }
+      const scene = scenes[index]; const progress = (index + 1) / scenes.length * 100; const structure=structureAt(index); renderJourney(index); renderLoopState(); get('progress').textContent = `${[structure.phase,structure.module,chapters[index]].filter(Boolean).join(' · ')}  ${index + 1} / ${scenes.length}`; get('meter-fill').style.width = `${progress}%`; moveMeterCat(progress); get('scene-title').textContent = scene.title; get('scene-text').textContent = scene.text; const sceneMain=get('scene-title').closest('.scene-main'); const oldIllustration=document.getElementById('scene-illustration'); if(oldIllustration) oldIllustration.remove(); sceneMain.classList.remove('has-illustration'); const imageModule=scenarioImageModules[requestedModule]; if(imageModule) { sceneMain.classList.add('has-illustration'); const illustration=document.createElement('img'); illustration.id='scene-illustration'; illustration.className='scene-illustration'; illustration.src=`assets/scenes/${imageModule}/${String(index + 1).padStart(2,'0')}.${imageModule === 'integration' || imageModule === 'journey' || imageModule === 'college' ? 'jpg' : 'png'}`; illustration.alt=`${scene.title}情境插图`; illustration.loading=index === 0 ? 'eager' : 'lazy'; get('scene-text').insertAdjacentElement('afterend', illustration); }
       const choices = get('choices'); choices.replaceChildren(); orderedChoices(scene,index).forEach(({choice,choiceIndex},displayIndex) => { const button = document.createElement('button'); button.type = 'button'; button.className = 'choice'; button.dataset.letter = String.fromCharCode(65 + displayIndex); const choiceData=choice[0]; const title=document.createElement('strong'); title.textContent=typeof choiceData==='object'&&choiceData!==null?choiceData.title:choiceData; button.append(title); if(typeof choiceData==='object'&&choiceData?.copy){const copy=document.createElement('small');copy.textContent=choiceData.copy;button.append(copy);} if(choiceIndex===3) button.classList.add('unmatched-choice'); button.setAttribute('aria-pressed', String(answers[index] === choiceIndex)); button.addEventListener('click', (event) => { if (answers[index] === choiceIndex) return; const wasAlreadyAnswered=answers[index] !== null; answers[index] = choiceIndex; button.classList.add('is-chosen'); burstFromChoice(button,event); saveProgress(); if (reviewMode && wasAlreadyAnswered && index <= reviewAnsweredThrough) { window.setTimeout(render, 180); return; } reviewMode=false; reviewAnsweredThrough=-1; window.setTimeout(advanceFromScene, 180); }); choices.append(button); });
       const selected=answers[index];
       const endsStructure=standardScaleItems.length && index % 9 === 8;
