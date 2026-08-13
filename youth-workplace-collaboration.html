@@ -1665,7 +1665,7 @@
               if (scaleReviewMode && wasAlreadyAnswered && activeScaleItem <= scaleReviewThrough) { renderStandardScale(); return; }
               scaleReviewMode=false;
               scaleReviewThrough=-1;
-              window.setTimeout(advanceFromScaleItem, 650);
+              window.setTimeout(advanceFromScaleItem, 160);
             });
             points.append(button);
           });
@@ -2106,7 +2106,7 @@
     get('back-from-scale').addEventListener('click',()=>{saveProgress();if(activeScaleItem>0){scaleReviewThrough=highestAnsweredScaleItem(activeScaleStage);activeScaleItem-=1;scaleReviewMode=true;renderStandardScale();window.scrollTo(0,0);return;}get('scale-assessment').hidden=true;index=Math.max(0,activeScaleStage*9+8);reviewMode=true;reviewAnsweredThrough=highestAnsweredSceneIndex();get('assessment').hidden=false;render();window.scrollTo(0,0);});
     get('finish-scale').addEventListener('click',()=>{const stage=standardScaleStages[activeScaleStage];const answerIndex=standardScaleItems.findIndex((item) => item.stageIndex===activeScaleStage && item.itemIndex===activeScaleItem);if(scaleAnswers[answerIndex]===null) return;if(activeScaleItem<stage.items.length-1){activeScaleItem+=1;if(activeScaleItem>scaleReviewThrough){scaleReviewMode=false;scaleReviewThrough=-1;}renderStandardScale();return;}advanceAfterScaleStage(activeScaleStage);});
     get('back').addEventListener('click',()=>{ if(index>0){reviewAnsweredThrough=highestAnsweredSceneIndex();if(standardScaleItems.length && index%9===0){showStandardScale(Math.floor(index/9)-1,true);activeScaleItem=standardScaleStages[activeScaleStage].items.length-1;scaleReviewThrough=highestAnsweredScaleItem(activeScaleStage);renderStandardScale();return;}index-=1;reviewMode=true;saveProgress();render();} });
-    get('next').addEventListener('click',()=>{ if(answers[index]===null) return; if(standardScaleItems.length && index%9===8){showStandardScale(Math.floor(index/9),true);return;} if(index<scenes.length-1){index+=1;if(index>reviewAnsweredThrough){reviewMode=false;reviewAnsweredThrough=-1;}saveProgress();render();}else prepareResults(); });
+    get('next').addEventListener('click',()=>{ if(answers[index]===null) return; if(standardScaleItems.length && index%9===8){showStandardScale(Math.floor(index/9));return;} if(index<scenes.length-1){index+=1;if(index>reviewAnsweredThrough){reviewMode=false;reviewAnsweredThrough=-1;}saveProgress();render();}else prepareResults(); });
     get('open-results').addEventListener('click',()=>{get('result-preview').hidden=true;results();});
     get('download-journey-report').addEventListener('click',downloadJourneyWordReport);
     get('toggle-evidence').addEventListener('click',()=>{const list=get('evidence-list');const expanded=list.hidden;list.hidden=!expanded;get('toggle-evidence').setAttribute('aria-expanded',String(expanded));get('toggle-evidence').textContent=expanded?'收起选择依据':'查看选择依据';});
