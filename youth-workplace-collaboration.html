@@ -472,6 +472,65 @@
     #workplace-collaboration.has-result-surface .rank-band i { position:absolute; top:-5px; left:var(--position); width:4px; height:19px; background:#173940; transform:translateX(-50%); }
     #workplace-collaboration.has-result-surface .rank.top-one { border-left-color:#d7aa42; background:#fff9e8; } #workplace-collaboration.has-result-surface .rank.top-two { border-left-color:#9d8bd1; background:#f8f6ff; } #workplace-collaboration.has-result-surface .rank.top-three { border-left-color:#83ad88; background:#f2f9f0; }
     @media (max-width:640px) { .scale-control { grid-template-columns:1fr; gap:10px; } .scale-end:last-child { text-align:left; } .scale-points { max-width:310px; } }
+
+    /* Keep the report readable at phone widths. These declarations deliberately
+       come after the desktop result layout so they cannot be overridden by it. */
+    @media (max-width:720px) {
+      #workplace-collaboration.has-result-surface .result-grid {
+        grid-template-columns:minmax(0,1fr);
+        gap:16px;
+      }
+      #workplace-collaboration.has-result-surface .result-grid > .panel {
+        min-width:0;
+      }
+      #workplace-collaboration.has-result-surface .rank {
+        grid-template-columns:28px minmax(0,1fr) 48px;
+        gap:8px;
+        padding:7px 8px;
+      }
+      #workplace-collaboration.has-result-surface .rank-band {
+        grid-column:2 / 4;
+        margin:2px 0 3px;
+      }
+      #workplace-collaboration.has-result-surface .rank-meta small {
+        overflow:visible;
+        text-overflow:clip;
+        white-space:normal;
+      }
+      #workplace-collaboration.has-result-surface .journey-sop-card h5 small,
+      #workplace-collaboration.has-result-surface .journey-sop-card b {
+        white-space:normal;
+        text-align:left;
+      }
+      #workplace-collaboration.has-result-surface .journey-gap-profile-head,
+      #workplace-collaboration.has-result-surface .journey-constraint-card > header {
+        grid-template-columns:minmax(0,1fr);
+      }
+      #workplace-collaboration.has-result-surface .journey-action-plan-grid,
+      #workplace-collaboration.has-result-surface .johari-window,
+      #workplace-collaboration.has-result-surface .action-lab-map {
+        grid-template-columns:minmax(0,1fr);
+      }
+      #workplace-collaboration.has-result-surface .framework-tabs,
+      #workplace-collaboration.has-result-surface .action-card-buttons,
+      #workplace-collaboration.has-result-surface .actions {
+        display:grid;
+        grid-template-columns:minmax(0,1fr);
+      }
+      #workplace-collaboration.has-result-surface .framework-tabs .action,
+      #workplace-collaboration.has-result-surface .action-card-buttons .action,
+      #workplace-collaboration.has-result-surface .actions .action {
+        width:100%;
+      }
+      #workplace-collaboration.has-result-surface .journey-insight-block,
+      #workplace-collaboration.has-result-surface .journey-action-plan,
+      #workplace-collaboration.has-result-surface .johari-quadrant,
+      #workplace-collaboration.has-result-surface .action-pole,
+      #workplace-collaboration.has-result-surface .action-fusion {
+        min-width:0;
+        overflow-wrap:anywhere;
+      }
+    }
     @media (prefers-reduced-motion:no-preference) { .meter span { transition:width .32s ease-out; } .journey-node.is-active circle { transform-box:fill-box; transform-origin:center; animation:active-node-pulse .45s ease-out both; } .choice:active,.action:not(:disabled):active,.journey-center-card:active,.journey-report-download:active { scale:.98; filter:brightness(.97); } #result:not([hidden]) { animation:result-enter .36s ease-out both; } .scroll-reveal { opacity:0; transform:translateY(16px); transition:opacity .36s ease-out,transform .36s ease-out; transition-delay:var(--reveal-delay,0ms); } .scroll-reveal.is-visible { opacity:0; transform:translateY(16px); transition:opacity .36s ease-out,transform .36s ease-out; transition-delay:var(--reveal-delay,0ms); } .scroll-reveal.is-visible { opacity:1; transform:translateY(0); } .chapter-interlude { animation:interlude-backdrop .2s ease-out both; } .chapter-interlude__panel { animation:interlude-panel .32s ease-out both; } }
     @keyframes active-node-pulse { 0% { transform:scale(.82); } 65% { transform:scale(1.1); } 100% { transform:scale(1); } }
     @keyframes result-enter { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
